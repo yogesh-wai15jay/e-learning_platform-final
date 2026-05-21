@@ -84,7 +84,7 @@ app.use('/api/assignments', assignmentRoutes);
 // ... after all your `app.use('/api', ...)` routes ...
 
 // Serve static files from the React frontend build
-const frontendBuildPath = path.join(__dirname, '../frontend/build');  // adjust path if frontend folder is at different level
+const frontendBuildPath = path.join(__dirname, '../frontend/dist');  // adjust path if frontend folder is at different level
 app.use(express.static(frontendBuildPath));
 
 // For any other route (not starting with /api), serve index.html
