@@ -1,9 +1,12 @@
 const nodemailer = require('nodemailer');
+const dns = require("dns");
 const puppeteer = require('puppeteer');
 const fs = require('fs');              // for sync methods
 const fsPromises = require('fs').promises; // (optional) for async
 const path = require('path');
 
+// FORCE NODE TO PREFER IPv4
+dns.setDefaultResultOrder("ipv4first");
 
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
@@ -13,9 +16,22 @@ const transporter = nodemailer.createTransport({
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS,
   },
-  connectionTimeout: 10000,
-  greetingTimeout: 10000,
-  socketTimeout: 10000,
+  tls: {
+    rejectUnauthorized: false,
+    family: 4, // FORCE IPv4
+  },
+  connectionTimeout: 20000,
+  greetingTimeout: 20000,
+  socketTimeout: 20000,
+});
+
+// TEST SMTP CONNECTION
+transporter.verify((error, success) => {
+  if (error) {
+    console.log("SMTP ERROR:", error);
+  } else {
+    console.log("SMTP SERVER READY");
+  }
 });
 
 const sendEmail = async (to, subject, html, attachments = []) => {
